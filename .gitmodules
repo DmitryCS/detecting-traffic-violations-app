@@ -1,0 +1,6 @@
+[submodule "detectron2"]
+	path = detectron2
+	url = https://github.com/DmitryCS/detectron2
+[submodule "sort"]
+	path = sort
+	url = https://github.com/DmitryCS/sort

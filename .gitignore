@@ -1,0 +1,16 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea
+venv
+raw
+output
+predict_photo.py
+predict_photo_light.py
+your_file.txt
+raw_files
+__pycache__/
+db/__pycache__/
+db/migrations/versions/__pycache__/
+db/models/__pycache__/
+db/queries/__pycache__/
+web/static/raw/
+transport/sanic/tests/__pycache__/
