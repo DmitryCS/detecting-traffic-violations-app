@@ -61,6 +61,9 @@ class DBSession:
         except DataError as e:
             raise DBDataException(e)
 
+    def check_existing_hash(self, hash_video) -> DBVideoQueue:
+        return self._session.query(DBVideoQueue).filter(DBVideoQueue.hash_video == hash_video).first()
+
     def add_model_video(self, model: BaseModel):
         try:
             self._session.add(model)

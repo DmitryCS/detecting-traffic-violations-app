@@ -38,7 +38,7 @@ $.ajax({
                           <div class="modal-body mb-0 p-0">
                     
                             <div class="embed-responsive embed-responsive-16by9 z-depth-1-half">
-                              <iframe class="embed-responsive-item" src="static/raw/${video_name.slice(0,-4)}22.mp4"
+                              <iframe class="embed-responsive-item" src="static/raw/${video_name}"
                                 allowfullscreen></iframe>
                             </div>
                     
@@ -66,7 +66,7 @@ $.ajax({
                     </div>
                     <!--Modal: Name-->
                     
-                    <a><img class="img-fluid z-depth-1" src="static/raw/frames/${video_name.slice(0,-4)}2.png" alt="video"
+                    <a><img class="img-fluid z-depth-1" src="static/raw/frames/${video_name.slice(0,-4)}.png" alt="video"
                         data-toggle="modal" data-target="#modal${i}"></a>
                     
 <!--                    </div>-->

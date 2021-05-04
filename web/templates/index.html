@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Detecting traffic violations</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
     <h1>Send video for detecting traffic violations</h1>
@@ -45,8 +46,11 @@
             <div class="col-12">
                 <b>Wait detection...</b>
                 <p class="url-for-result">Result: <a href=""></a></p>
-                <div class="progress">
-                  <div class="progress-bar bg-info" id="detectionProgressbar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="200">0%</div>
+                <div class="progress" style="height: 50px">
+                  <h1>
+<!--                      <div id="detectionProgressbar">0%</div>-->
+                      <div class="progress-bar bg-info" id="detectionProgressbar" role="progressbar" style="width: 0%;color:blue;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="200">0%</div>
+                  </h1>
                 </div>
                 <br>
             </div>
@@ -69,6 +73,9 @@
     </section>
 
      <button type="submit" class="btn btn-success" id="send-video">Send video</button>
+
+    <div>All queries: </div>
+    <div class="row" id="elements"></div>
 </body>
 <!--<script type="text/javascript">-->
 <!--    function LoadFile() {-->
@@ -84,9 +91,12 @@
 <!--        }-->
 <!--    }-->
 <!--</script>-->
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script>-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script>
-<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script src="static/js/interface.js" type="text/javascript"></script>
+<script src="static/js/gallery.js" type="text/javascript"></script>
 </html>
 
 <!--integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"-->

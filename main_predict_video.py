@@ -24,9 +24,9 @@ def main_predict_video():
     )
     database = DataBase(connection=engine)
     database.check_connection()
-    session = database.make_session()
 
     while True:
+        session = database.make_session()
         new_video = session.get_last_video_from_queue()
         if new_video:
             file_name = new_video.video_name
@@ -39,9 +39,10 @@ def main_predict_video():
             update_progress(session, new_video.id, 100)
             session.set_video_done(new_video.id)
             session.commit_session()
-            create_image_preview(os.path.join(*['web', 'static', 'raw', file_name[:-4] + '2.mp4']),
-                                 os.path.join(*['web', 'static', 'raw', 'frames', file_name[:-4] + '2.png']))
+            create_image_preview(os.path.join(*['web', 'static', 'raw', file_name]),
+                                 os.path.join(*['web', 'static', 'raw', 'frames', file_name[:-4] + '.png']))
         else:
+            session.close_session()
             time.sleep(0.5)
 
 

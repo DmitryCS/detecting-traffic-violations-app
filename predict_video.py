@@ -221,7 +221,9 @@ def predict_video_outside(path_to_video, path_to_save_video, session, progress_i
     video.release()
     output_file.release()
     os.system(
-        f"ffmpeg -i {path_to_save_video} -vcodec libx264 {path_to_save_video[:-4] + '2.mp4'}")
+        f"ffmpeg -i {path_to_save_video} -vcodec libx264 {path_to_save_video[:-5] + '.mp4'}")
+    os.remove(path_to_video)
+    os.remove(path_to_save_video)
     print(time.time() - start_time)
 
 

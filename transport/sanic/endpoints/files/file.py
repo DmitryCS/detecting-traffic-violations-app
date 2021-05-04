@@ -4,11 +4,12 @@ import uuid
 from sanic import response
 from sanic.request import Request
 from sanic.response import BaseHTTPResponse, file
+import hashlib
 
 from db.database import DBSession
 from db.exceptions import DBDataException, DBIntegrityException, DBFileNotExistsException
 from db.queries.progress import get_progress_percantage, update_progress, create_progress
-from db.queries.videos_queue import add_video_in_queue, get_list_videos
+from db.queries.videos_queue import add_video_in_queue, get_list_videos, check_existing_hash
 from transport.sanic.endpoints import BaseEndpoint
 from db.queries import file as file_queries
 from transport.sanic.exceptions import SanicDBException, SanicFileNotFound, SanicUserConflictException
@@ -78,13 +79,19 @@ class GetFileEndpoint(BaseEndpoint):
                 file.write(f.body)
             file_names.append(filename)
         print(file_names)
-        queue_id = add_video_in_queue(session, file_names[0])
+
+        with open(os.path.join(*['raw_files', file_names[0]]), "rb") as f:
+            file_hash = hashlib.md5()
+            chunk = f.read(8192)
+            while chunk:
+                file_hash.update(chunk)
+                chunk = f.read(8192)
+        hash_video = file_hash.hexdigest()
+        if check_existing_hash(session, hash_video):
+            return await self.make_response_json(body={"existing": 1, "file_name": file_names[0]}, status=201)
+        queue_id = add_video_in_queue(session, file_names[0], hash_video)
         progress_id = create_progress(session, queue_id)
-        print("hhh", progress_id)
         return await self.make_response_json(body={"progress_id": progress_id, "file_name": file_names[0]}, status=201)
-        # file_names[0] = file_names[0][:-4] + '22.mp4'
-        # print(file_names[0])
-        # return await self.make_response_json(body={"file_ids": file_names}, status=201)
 
 
 class GetProgressEndpoint(BaseEndpoint):

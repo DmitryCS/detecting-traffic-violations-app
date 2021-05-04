@@ -107,14 +107,8 @@ $("#send-video").click(function (){
     let file = document.getElementById("video-file").files[0];
     //alert(file)
     if (file) {
-        // var blob = new Blob(file, {
-        //     type: 'video/mp4'
-        // });
-        // var data = new FormData();
-        // data.append('file', blob);  //Correct: sending the Blob itself
         var fd = new FormData();
         fd.append('file',file);
-
         $.ajax({
             type: "POST",
             enctype: 'multipart/form-data',
@@ -126,20 +120,12 @@ $("#send-video").click(function (){
             // timeout: 600000,
             success: function (response) {
                 console.log(response);
-                //console.log(response['file_ids'][0]);
-                //setVideoFileUrl("/static/raw/"+response['file_ids'][0],"video/mp4");
-                //setTimeout(() => checkProcess(response.id),2000);
+                if(response['existing']){
+                    alert("Video existing")
+                    return 0;
+                }
                 interfaceState.setState(STATE.PROGRESS);
-                // $.ajax({
-                //     url: 'http://localhost:8000/progress/'+ response['progress_id'].toString(),
-                //     type: 'POST',
-                //     dataType: 'json',
-                //     contentType: 'application/json',
-                //     success: function (data) {
-                //     },
-                //     data: JSON.stringify({'file_name':response['file_name']})
-                // });
-                interfaceState.progressUpdateTimerId = setInterval(() => checkProgress(response['progress_id'], response['file_name'].slice(0,-4) + '22.mp4'),1000);
+                interfaceState.progressUpdateTimerId = setInterval(() => checkProgress(response['progress_id'], response['file_name']),1000);
             },
             error: function (e) {
                 console.log("ERROR : ", e);

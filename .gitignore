@@ -14,3 +14,4 @@ db/models/__pycache__/
 db/queries/__pycache__/
 web/static/raw/
 transport/sanic/tests/__pycache__/
+db.sqlite
