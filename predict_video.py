@@ -156,8 +156,8 @@ def run_on_video(video):
             # Обновляем трекер, получаем track_id (id объекта на предыдущих кадрах) для каждого найденного объекта
             for_tracker = np.concatenate([boxes, scores[:, None]], axis=1)
             dets, associaties = tracker.update(for_tracker, make_associaties=True)
-            if type(associaties) is not list:
-                track_ids = associaties.tolist()
+            # if type(associaties) is not list:
+            #     track_ids = associaties.tolist()
             track_ids = associaties
             for i in range(len(track_ids)):
                 inst = boxes[i]
@@ -187,6 +187,7 @@ def predict_video_outside(path_to_video, path_to_save_video, session, progress_i
     cfg.MODEL.WEIGHTS = my_cfg.path_to_weights  # model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml") #my_cfg.path_to_weights  # "model_final.pth" # путь к найденным лучшим весам модели
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.51  # установить порог распознавания объекта в 50% (объекты, распознанные с меньшей вероятностью не будут учитываться)
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = 13  # число классов для распознавания
+    cfg.MODEL.DEVICE = 'cuda:0'
     global predictor, tracker, mask, frame_gen
     predictor = DefaultPredictor(cfg)
     tracker = Sort(max_age=40)
@@ -225,7 +226,7 @@ def predict_video_outside(path_to_video, path_to_save_video, session, progress_i
     os.remove(path_to_video)
     os.remove(path_to_save_video)
     print(time.time() - start_time)
-
+    # 2.3 секунды на кадр
 
 if __name__ == '__main__':
     # os.system(f"ffmpeg -i {my_cfg.video_file_name_to_save} -vcodec libx264 {my_cfg.video_file_name_to_save} -y")
