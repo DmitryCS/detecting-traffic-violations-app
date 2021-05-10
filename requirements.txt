@@ -17,7 +17,6 @@ cycler==0.10.0
 Cython==0.29.21
 decorator==4.4.2
 defusedxml==0.6.0
-detectron2==0.3+cu101
 entrypoints==0.3
 filterpy==1.4.5
 future==0.18.2
