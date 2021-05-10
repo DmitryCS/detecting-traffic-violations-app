@@ -195,8 +195,8 @@ def predict_video_outside(path_to_video, path_to_save_video, session, progress_i
     # Предсказание видео
     video = cv2.VideoCapture(path_to_video)  # my_cfg.video_file_name
     num_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    w = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
-    h = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    # w = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+    # h = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = int(video.get(cv2.CAP_PROP_FPS))
 
     mask = create_mask(my_cfg.path_to_mask, w, h)

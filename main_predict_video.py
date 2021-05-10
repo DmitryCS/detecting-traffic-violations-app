@@ -27,6 +27,9 @@ def main_predict_video():
 
     if not os.path.exists(os.path.join(*['web', 'static', 'raw'])):
         os.makedirs(os.path.join(*['web', 'static', 'raw']))
+        os.makedirs(os.path.join(*['web', 'static', 'raw', 'frames']))
+    if not os.path.exists('raw_files'):
+        os.makedirs('raw_files')
     while True:
         session = database.make_session()
         new_video = session.get_last_video_from_queue()
