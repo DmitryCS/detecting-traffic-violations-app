@@ -25,6 +25,8 @@ def main_predict_video():
     database = DataBase(connection=engine)
     database.check_connection()
 
+    if not os.path.exists(os.path.join(*['web', 'static', 'raw'])):
+        os.makedirs(os.path.join(*['web', 'static', 'raw']))
     while True:
         session = database.make_session()
         new_video = session.get_last_video_from_queue()
