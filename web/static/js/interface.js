@@ -1,13 +1,8 @@
 globalThis.videos = {'kompol-11s':"./static/raw/blanks/cut_final_10sek_v2_final_with_crossing.mp4"}
-// alert("hello");
 // $( "#road-region-select" ).change(function() {
 //     if (this.value == "custom") $("#custom-road-region-files").show();
 //     else $("#custom-road-region-files").hide();
 //     });
-$("#but-download").change(function (){
-    //console.log(10);
-});
-//console.log(document.getElementById("youtube-video").value)
 $( "#video-select" ).change(function() {
     setVideoFileUrl();
     if (this.value == "custom") {
@@ -17,13 +12,27 @@ $( "#video-select" ).change(function() {
     if (this.value == "youtube-link") {
         $("#video-form2").show();
     }
-    else $("#video-form2").hide();
+    else {
+        $("#video-form2").hide();
+        $("#youtube-link").hide();
+    }
     if (this.value == "kompol-11s") {
         setVideoFileUrl(globalThis.videos[this.value], "video/mp4");
-        $("#video-form").show();
     }
 });
+function getId(url) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
 
+    return (match && match[2].length === 11)
+      ? match[2]
+      : null;
+}
+$("#but-download").click(function (){
+    const videoId = getId('https://www.youtube.com/watch?v=x5EjzN8IdOA');
+    document.getElementById("youtube-link").src = "https://www.youtube.com/embed/"+videoId;
+    $("#youtube-link").show();
+});
 //$("#mask-file").change(function(){showUploadImage(this, "#mask-view")});
 
 let STATE = {UPLOAD: 1, PROGRESS: 2, DOWNLOAD: 3};
@@ -57,14 +66,14 @@ class InterfaceState {
 }
 
 let interfaceState = new InterfaceState(STATE.UPLOAD);
-document.getElementById("to-upload-state").onclick = () => interfaceState.setState(STATE.PROGRESS);
+// document.getElementById("to-upload-state").onclick = () => interfaceState.setState(STATE.PROGRESS);
 
 
-function setVideoFileUrl(url, type) {
+function setVideoFileUrl(url, type, id_video_view = "#video-view") {
     if (url && type) {
-        $("#video-view").show();
-        $("#video-view>video").attr("src",url);
-        $("#video-view>video").attr("type",type);
+        $(id_video_view).show();
+        $(id_video_view + ">video").attr("src",url);
+        $(id_video_view + ">video").attr("type",type);
         return;
     }
     let file = document.getElementById("video-file").files[0];
@@ -75,7 +84,7 @@ function setVideoFileUrl(url, type) {
         if (regexp.test(file.name)) $("#video-view>video").attr("type","video/mp4");
         else $("#video-view>video").attr("type","");
 
-        $("#video-view>video").attr("src",URL.createObjectURL(file));
+        $(id_video_view + ">video").attr("src",URL.createObjectURL(file));
     }
     else $("#video-view").hide();
 }
@@ -94,8 +103,8 @@ function setVideoFileUrl(url, type) {
 //
 // }
 //
-$("#video-file").change(setVideoFileUrl);
-//setVideoFileUrl(document.getElementById("youtube-video").value, "video/mp4")
+// $("#video-file").change(setVideoFileUrl);
+setVideoFileUrl(document.getElementById("youtube-video").value, "video/mp4")
 //
 //
 // $("#video-file").change();
@@ -219,8 +228,8 @@ async function checkProgress(processId, file_name)
                 console.log('FILE IS READY');
                 // interfaceState.setState(STATE.DOWNLOAD);
                 clearInterval(interfaceState.progressUpdateTimerId);
-                setVideoFileUrl("/static/raw/"+file_name,"video/mp4");
-                interfaceState.setState(STATE.UPLOAD);
+                setVideoFileUrl("/static/raw/"+file_name,"video/mp4", "#video-download");
+                interfaceState.setState(STATE.DOWNLOAD);
             }
             else{
                 //document.getElementById("detectionProgressbar").innerHTML = data['progress_percantage'].toString() + "%";

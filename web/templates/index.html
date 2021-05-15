@@ -15,7 +15,7 @@
 <!--        <video controls height="300">-->
 <!--            <source src="static/raw/cut_final_10sek_v2_final_with_crossing2.mp4" type="video/mp4">-->
 <!--        </video>-->
-    <form id="sendVideoForm" action="" class="row" style="background-color:#dedede">
+    <form id="sendVideoForm" action="" class="row" style="background-color:#dedede" onsubmit="return false">
     <div class="col-8">
         <b>Video</b>
         <select class="form-control" id="video-select">
@@ -38,8 +38,9 @@
         </div>
         <br>
         <div id="video-view" style="display: none;">
-            <video controls width="50%"></video>
+            <video controls width="50%" src=""></video>
         </div>
+        <iframe id="youtube-link" src="https://www.youtube.com/embed/x5EjzN8IdOA" style="display: none;" type="video/mp4"></iframe>
       </div>
     </form>
     <section id="detectionProccess" class="row" style="background-color:#dedede" >
@@ -48,7 +49,6 @@
                 <p class="url-for-result">Result: <a href=""></a></p>
                 <div class="progress" style="height: 50px">
                   <h1>
-<!--                      <div id="detectionProgressbar">0%</div>-->
                       <div class="progress-bar bg-info" id="detectionProgressbar" role="progressbar" style="width: 0%;color:blue;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="200">0%</div>
                   </h1>
                 </div>
@@ -62,13 +62,13 @@
         </div>
         <div class="col-4 d-flex flex-column align-items-start">
             <hr>
-            <p class="url-for-result">Url for result: <a href=""></a></p>
+            <p class="url-for-result">Results: <a href=""></a></p>
             <hr>
             <a href="" id="download-mp4-file" download class="btn btn-info m-1"> Скачать видео mp4</a>
-            <a href="" id="download-webm-file" download class="btn btn-info m-1"> Скачать видео webm</a>
-            <a href="" id="download-json-file" download class="btn btn-info m-1">Скачать json</a>
+<!--            <a href="" id="download-webm-file" download class="btn btn-info m-1"> Скачать видео webm</a>-->
+<!--            <a href="" id="download-json-file" download class="btn btn-info m-1">Скачать json</a>-->
             <hr>
-            <button class="btn btn-info" id="to-upload-state">To start</button>
+<!--            <button class="btn btn-info" id="to-upload-state">To start</button>-->
         </div>
     </section>
 

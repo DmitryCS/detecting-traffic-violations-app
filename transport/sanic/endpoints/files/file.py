@@ -99,6 +99,7 @@ class GetProgressEndpoint(BaseEndpoint):
             self, request: Request, body: dict, session: DBSession, progress_id: int = None, *args, **kwargs
     ) -> BaseHTTPResponse:
         progress_ptg = get_progress_percantage(session, progress_id)
+        session.close_session()
         print(progress_ptg)
         return await self.make_response_json(body={"progress_percantage": progress_ptg}, status=201)
 
