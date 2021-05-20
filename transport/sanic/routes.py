@@ -44,6 +44,9 @@ def get_routes(config: ApplicationConfig, context: Context) -> tuple:
         endpoints.GetFileEndpoint(
             config=config, context=context, uri='/file', methods=['GET', 'POST']
         ),
+        endpoints.GetYoutubeFileEndpoint(
+            config=config, context=context, uri='/youtube_file', methods=['GET', 'POST']
+        ),
         endpoints.GetProgressEndpoint(
             config=config, context=context, uri='/progress/<progress_id:int>', methods=['GET', 'POST']
         ),

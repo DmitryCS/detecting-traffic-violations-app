@@ -124,3 +124,4 @@ Werkzeug==1.0.1
 widgetsnbextension==3.5.1
 yacs==0.1.8
 ninja
+youtube-dl==2021.5.16

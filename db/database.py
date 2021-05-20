@@ -108,11 +108,19 @@ class DBSession:
     def update_progress_by_id(self, pid: int, percantage: int) -> None:
         self._session.query(DBProgress).filter(DBProgress.id == pid).first().progress_percentage = percantage
 
+    def delete_progress_by_id(self, pid: int) -> None:
+        self._session.query(DBProgress).filter(DBProgress.id == pid).first().is_delete = true()
+
     def get_progress_by_id(self, pid: int) -> DBProgress:
         return self._session.query(DBProgress).filter(DBProgress.id == pid).first()
 
     def get_last_video_from_queue(self) -> DBVideoQueue:
-        return self._session.query(DBVideoQueue).filter(DBVideoQueue.is_done == false()).order_by(asc(DBVideoQueue.id)).first()
+        return self._session.query(DBVideoQueue).filter(
+            and_(DBVideoQueue.is_done == false(),
+                 DBVideoQueue.is_delete == false())).order_by(asc(DBVideoQueue.id)).first()
+
+    def delete_video_from_queue_by_pid(self, pid: int) -> None:
+        self._session.query(DBVideoQueue).filter(DBVideoQueue.id == pid).first().is_delete = true()
 
     def set_video_done(self, video_id):
         self._session.query(DBVideoQueue).filter(DBVideoQueue.id == video_id).first().is_done = true()

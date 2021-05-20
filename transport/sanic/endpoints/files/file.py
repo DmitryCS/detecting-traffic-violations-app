@@ -1,6 +1,7 @@
 import os
 import uuid
 
+import youtube_dl
 from sanic import response
 from sanic.request import Request
 from sanic.response import BaseHTTPResponse, file
@@ -93,6 +94,46 @@ class GetFileEndpoint(BaseEndpoint):
         progress_id = create_progress(session, queue_id)
         return await self.make_response_json(body={"progress_id": progress_id, "file_name": file_names[0]}, status=201)
 
+
+class GetYoutubeFileEndpoint(BaseEndpoint):
+
+    async def method_post(
+            self, request: Request, body: dict, session: DBSession, *args, **kwargs
+    ) -> BaseHTTPResponse:
+        if not os.path.exists('raw_files'):
+            os.makedirs('raw_files')
+        youtube_link = request.json['file']
+        print(youtube_link)
+        filename = str(uuid.uuid4())
+        path_to_file = os.path.join('raw_files', filename)
+        print(path_to_file)
+        ydl_opts = {
+            'postprocessors': [{
+                'key': 'FFmpegVideoConvertor',
+                'preferedformat': 'mp4',
+            }],
+            'outtmpl': path_to_file
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([youtube_link])
+        file_names = []
+        # filename = '.'.join([str(uuid.uuid4()), f.name.split('.')[-1]])
+        # path_to_file = os.path.join('raw_files', filename)
+        file_names.append(filename + '.mp4')
+        print(file_names)
+
+        with open(os.path.join(*['raw_files', file_names[0]]), "rb") as f:
+            file_hash = hashlib.md5()
+            chunk = f.read(8192)
+            while chunk:
+                file_hash.update(chunk)
+                chunk = f.read(8192)
+        hash_video = file_hash.hexdigest()
+        if check_existing_hash(session, hash_video):
+            return await self.make_response_json(body={"existing": 1, "file_name": file_names[0]}, status=201)
+        queue_id = add_video_in_queue(session, file_names[0], hash_video)
+        progress_id = create_progress(session, queue_id)
+        return await self.make_response_json(body={"progress_id": progress_id, "file_name": file_names[0]}, status=201)
 
 class GetProgressEndpoint(BaseEndpoint):
     async def method_get(

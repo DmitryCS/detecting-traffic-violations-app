@@ -12,6 +12,16 @@ def update_progress(session: DBSession, progress_id: int, percentage: int) -> No
     session.commit_session()
 
 
+def delete_progress(session: DBSession, progress_id: int) -> None:
+    session.delete_progress_by_id(progress_id)
+    session.commit_session()
+
+
+def delete_video_from_queue(session: DBSession, progress_id: int) -> None:
+    session.delete_video_from_queue_by_pid(progress_id)
+    session.commit_session()
+
+
 def get_progress_percantage(session: DBSession, progress_id: int) -> int:
     db_progress = session.get_progress_by_id(progress_id)
     if db_progress is not None:

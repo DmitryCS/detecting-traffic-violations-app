@@ -29,7 +29,8 @@ function getId(url) {
       : null;
 }
 $("#but-download").click(function (){
-    const videoId = getId('https://www.youtube.com/watch?v=x5EjzN8IdOA');
+    var youtube_watch_link = document.getElementById("youtube-video").value
+    const videoId = getId(youtube_watch_link);
     document.getElementById("youtube-link").src = "https://www.youtube.com/embed/"+videoId;
     $("#youtube-link").show();
 });
@@ -114,7 +115,7 @@ setVideoFileUrl(document.getElementById("youtube-video").value, "video/mp4")
 //
 $("#send-video").click(function (){
     let file = document.getElementById("video-file").files[0];
-    //alert(file)
+    let youtube_file = document.getElementById("youtube-video").value;
     if (file) {
         var fd = new FormData();
         fd.append('file',file);
@@ -127,6 +128,26 @@ $("#send-video").click(function (){
             contentType: false,
             cache: false,
             // timeout: 600000,
+            success: function (response) {
+                console.log(response);
+                if(response['existing']){
+                    alert("Video existing")
+                    return 0;
+                }
+                interfaceState.setState(STATE.PROGRESS);
+                interfaceState.progressUpdateTimerId = setInterval(() => checkProgress(response['progress_id'], response['file_name']),1000);
+            },
+            error: function (e) {
+                console.log("ERROR : ", e);
+            }
+        });
+    }
+    else if(youtube_file){
+        var youtube_link = {'file':youtube_file};
+        $.ajax({
+            type: "POST",
+            url: "http://localhost:8000/youtube_file",
+            data: JSON.stringify(youtube_link),
             success: function (response) {
                 console.log(response);
                 if(response['existing']){
@@ -230,6 +251,8 @@ async function checkProgress(processId, file_name)
                 clearInterval(interfaceState.progressUpdateTimerId);
                 setVideoFileUrl("/static/raw/"+file_name,"video/mp4", "#video-download");
                 interfaceState.setState(STATE.DOWNLOAD);
+                $("#video-download>video").attr('src', "/static/raw/"+file_name);
+                $("#download-mp4-file").attr('href', "/static/raw/"+file_name);
             }
             else{
                 //document.getElementById("detectionProgressbar").innerHTML = data['progress_percantage'].toString() + "%";
