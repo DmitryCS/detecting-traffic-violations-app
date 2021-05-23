@@ -4,7 +4,7 @@ import cv2
 
 from sqlalchemy import create_engine
 
-import predict_video
+import predict_video2
 from db.config import PostgresConfig
 from db.database import DataBase
 from db.queries.progress import update_progress, delete_progress, delete_video_from_queue
@@ -35,22 +35,22 @@ def main_predict_video():
         new_video = session.get_last_video_from_queue()
         if new_video:
             file_name = new_video.video_name
-            try:
-                predict_video.predict_video_outside(
-                    os.path.join('raw_files', file_name),
-                    os.path.join(*['web', 'static', 'raw', file_name[:-4] + '2.mp4']),
-                    session,
-                    new_video.id
-                )
-                update_progress(session, new_video.id, 100)
-                session.set_video_done(new_video.id)
-                session.commit_session()
-                create_image_preview(os.path.join(*['web', 'static', 'raw', file_name]),
-                                     os.path.join(*['web', 'static', 'raw', 'frames', file_name[:-4] + '.png']))
-            except:
-                print('bad_format_video')
-                delete_progress(session, new_video.id)
-                delete_video_from_queue(session, new_video.id)
+            # try:
+            predict_video2.predict_video_outside(
+                os.path.join('raw_files', file_name),
+                os.path.join(*['web', 'static', 'raw', file_name[:-4] + '2.mp4']),
+                session,
+                new_video.id
+            )
+            update_progress(session, new_video.id, 100)
+            session.set_video_done(new_video.id)
+            session.commit_session()
+            create_image_preview(os.path.join(*['web', 'static', 'raw', file_name]),
+                                 os.path.join(*['web', 'static', 'raw', 'frames', file_name[:-4] + '.png']))
+            # except:
+            #     print('bad_format_video')
+            #     delete_progress(session, new_video.id)
+            #     delete_video_from_queue(session, new_video.id)
         else:
             session.close_session()
             time.sleep(0.5)

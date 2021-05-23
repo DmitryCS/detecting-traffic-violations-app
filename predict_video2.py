@@ -1,3 +1,6 @@
+import colorsys
+import json
+
 from configs import Config
 
 import numpy as np
@@ -121,6 +124,18 @@ reg_zones = around_line(line_bool, h, w)
 
 track_ids_to_zones = {}
 track_ids_to_zones_list = {}
+track_ids_to_zones_list2 = {}
+lines_json = {0:{}, 1:{}, 2: {}, 3:{}, 4:{}, 5:{}}
+with open('lines.json') as json_file:
+    data_json = json.load(json_file)
+    for ind, line_json in zip(range(6), data_json):
+        lines_json[ind] = line_json
+
+# lines_green_json = {0:{}}
+# with open('green_lines.json') as json_file:
+#     data_json = json.load(json_file)
+#     for ind, line_json in zip(range(1), data_json):
+#         lines_green_json[ind] = line_json
 
 
 def get_position_on_zones(center, reg_zones):
@@ -128,6 +143,32 @@ def get_position_on_zones(center, reg_zones):
     hx,wy = int(center[1]), int(center[0])
     return reg_zones[hx][wy]
 
+
+def get_position_on_zones2(center):
+    x, y = int(center[0]), int(center[1])
+    positions = [0, 0, 0, 0, 0, 0]
+    for ind in range(6):
+        if lines_json[ind]['minx'] <= x <= lines_json[ind]['maxx']:
+            # print(lines_json[ind]['minx'], lines_json[ind]['maxx'], y)
+            if y < lines_json[ind][str(x)]:
+                positions[ind] = 1
+            else:
+                positions[ind] = 2
+    return positions
+
+
+# def is_it_red(mid_pos):
+#     for ind in range(1):
+#         if lines_green_json[ind]['miny'] <= mid_pos[0] <= lines_green_json[ind]['maxy']:
+#             # print(lines_json[ind]['minx'], lines_json[ind]['maxx'], y)
+#             x1 = lines_green_json[0][str(left_pos[1])]
+#             x2 = lines_green_json[0][str(right_pos[1])]
+#             x_mid = (x1+x2)//2
+#             if x_mid < lines_green_json[ind][str(x_mid)]:
+#                 positions[ind] = 1
+#             else:
+#                 positions[ind] = 2
+#     return positions
 
 def run_on_video(video):
         video_visualizer = VideoVisualizer(dataset_metadata, ColorMode.IMAGE)
@@ -140,8 +181,12 @@ def run_on_video(video):
                 box = boxes[i]
                 track_id = track_ids[i]
                 # draw_label(frame, track_id, box[:2], size=2, shadow=True)
-                if track_id != 0 and -1 in track_ids_to_zones[track_id]:
+                if track_id != 0 and track_id in track_ids_to_zones_list.keys():
                     draw_label(frame, "Solid line crossing", box[:2], size=2, shadow=True)
+                # print(track_ids_to_zones_list2)
+                if track_id != 0 and track_id in track_ids_to_zones_list2.keys():
+                    draw_label(frame, "Driving a red light", box[:2], size=2, shadow=True)
+
             vis_frame = video_visualizer.draw_instance_predictions(frame, predictions)
             # Converts Matplotlib RGB format to OpenCV BGR format
             vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
@@ -152,6 +197,30 @@ def run_on_video(video):
             frame_with_mask = apply_mask(copy.deepcopy(frame), mask, [0,0,0], 1)
             outputs = predictor(frame_with_mask)
             boxes = outputs['instances'].pred_boxes.tensor.to("cpu").numpy()
+
+            r,g,b = frame[553][801]
+            hsv_pixel = colorsys.rgb_to_hsv(r, g, b)
+            hue = hsv_pixel[0] * 360
+            print(hue)
+            hue_green = True if hue > 80 and hue < 250 else False #170
+
+            # lst = outputs['instances'].pred_masks.to("cpu").numpy().tolist()
+            # print(outputs['instances'].pred_masks.to("cpu").numpy().tolist())
+            # print(len(lst), len(lst[0]), len(lst[0][0]))
+            # temp_center_bboxs = []
+            # for car_id in range(len(lst)):
+            #     br = False
+            #     for hh in range(len(lst[0])-1, -1, -1):
+            #         for ww in range(len(lst[0][0])):
+            #             if lst[car_id][hh][ww]:
+            #                 temp_center_bboxs.append([ww, hh])
+            #                 # print(hh, ww)
+            #                 br = True
+            #                 break
+            #         if br:
+            #             break
+            # exit(0)
+            lst = outputs['instances'].pred_masks.to("cpu").numpy()
             scores = outputs['instances'].scores.to("cpu").numpy()
             # Обновляем трекер, получаем track_id (id объекта на предыдущих кадрах) для каждого найденного объекта
             for_tracker = np.concatenate([boxes, scores[:, None]], axis=1)
@@ -161,21 +230,36 @@ def run_on_video(video):
             track_ids = associaties
             for i in range(len(track_ids)):
                 inst = boxes[i]
-                min_x, min_y = min(inst[0], inst[2]), min(inst[1], inst[3])
-                temp_center_bbox = [min_x + abs((inst[0] - inst[2]) / 2),
-                                    min_y + abs((inst[1] - inst[3]) / 2)]
-                pos_on_zone = get_position_on_zones(temp_center_bbox, reg_zones)
+                nonzeros = np.nonzero(lst[i])
+                argmaxh = np.argmax(nonzeros[0])
+                temp_center_bbox = [nonzeros[1][argmaxh], nonzeros[0][argmaxh]]
+                # temp_center_bbox = temp_center_bboxs[i]
+                # min_x, min_y = min(inst[0], inst[2]), min(inst[1], inst[3])
+                # temp_center_bbox = [min_x + abs((inst[0] - inst[2]) / 2),
+                #                     min_y + abs((inst[1] - inst[3]) / 2)]
+                num_lines = 4
+                pos_on_zones = get_position_on_zones2(temp_center_bbox)
                 if track_ids[i] not in track_ids_to_zones.keys():
-                    track_ids_to_zones[track_ids[i]] = {pos_on_zone}
-                elif pos_on_zone not in track_ids_to_zones[track_ids[i]] and pos_on_zone != 3:
-                    track_ids_to_zones[track_ids[i]].add(pos_on_zone)
-                    if len(track_ids_to_zones[track_ids[i]]) == 3:
-                        track_ids_to_zones[track_ids[i]].add(-1)
-                if track_ids[i] not in track_ids_to_zones_list.keys():
-                    track_ids_to_zones_list[track_ids[i]] = [pos_on_zone]
-                else:
-                    track_ids_to_zones_list[track_ids[i]].append(pos_on_zone)
+                    track_ids_to_zones[track_ids[i]] = [0, 0, 0, 0, 0, 0]
+                for j in range(num_lines):
+                    fir = track_ids_to_zones[track_ids[i]][j]
+                    sec = pos_on_zones[j]
+                    if fir != sec and fir*sec != 0:
+                        track_ids_to_zones_list[track_ids[i]] = 3
 
+                if hue_green:
+                    if track_ids_to_zones[track_ids[i]][2] == 1:
+                        fir = track_ids_to_zones[track_ids[i]][4]
+                        sec = pos_on_zones[4]
+                        if fir != sec and fir * sec != 0:
+                            track_ids_to_zones_list2[track_ids[i]] = 4
+                    elif track_ids_to_zones[track_ids[i]][2] == 2:
+                        fir = track_ids_to_zones[track_ids[i]][5]
+                        sec = pos_on_zones[5]
+                        if fir != sec and fir * sec != 0:
+                            track_ids_to_zones_list2[track_ids[i]] = 5
+
+                track_ids_to_zones[track_ids[i]] = pos_on_zones
             yield process_predictions(frame, outputs, track_ids)
 
 
@@ -234,7 +318,7 @@ if __name__ == '__main__':
     start_time = time.time()
     cfg = get_cfg()
     cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
-        #"LVISv0.5-InstanceSegmentation/mask_rcnn_R_50_FPN_1x.yaml"))  # получение используемой модели
+    # cfg.merge_from_file(model_zoo.get_config_file("LVISv0.5-InstanceSegmentation/mask_rcnn_R_50_FPN_1x.yaml"))  # получение используемой модели
     cfg.MODEL.WEIGHTS =  my_cfg.path_to_weights #model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml") #my_cfg.path_to_weights  # "model_final.pth" # путь к найденным лучшим весам модели
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.51  # установить порог распознавания объекта в 50% (объекты, распознанные с меньшей вероятностью не будут учитываться)
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = 13  # число классов для распознавания

@@ -4,12 +4,14 @@ globalThis.videos = {'kompol-11s':"./static/raw/blanks/cut_final_10sek_v2_final_
 //     else $("#custom-road-region-files").hide();
 //     });
 $( "#video-select" ).change(function() {
+    $("#video-view").attr("src","");
     setVideoFileUrl();
     if (this.value == "custom") {
         $("#video-form").show();
     }
     else $("#video-form").hide();
     if (this.value == "youtube-link") {
+        $("#video-view").hide();
         $("#video-form2").show();
     }
     else {
@@ -104,7 +106,7 @@ function setVideoFileUrl(url, type, id_video_view = "#video-view") {
 //
 // }
 //
-// $("#video-file").change(setVideoFileUrl);
+$("#video-file").change(setVideoFileUrl);
 setVideoFileUrl(document.getElementById("youtube-video").value, "video/mp4")
 //
 //
