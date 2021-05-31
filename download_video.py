@@ -2,9 +2,9 @@ import shutil
 import requests
 import os
 
-auth='Bearer XXXXXXXXXXXXXXXXX' # your token
-start_time='10.05.2021 22:10'
-stop_time='10.05.2021 22:11'
+auth='Bearer XXXXXXX' # your token
+start_time='10.05.2021 23:10'
+stop_time='10.05.2021 23:21'
 #start_time='14.05.2021 12:47'
 #stop_time='14.05.2021 12:57'
 url="https://cams.is74.ru/archive/cam964.m3u8?START_TIME="+start_time.replace(' ','%20')+"&STOP_TIME="+stop_time.replace(' ','%20')
