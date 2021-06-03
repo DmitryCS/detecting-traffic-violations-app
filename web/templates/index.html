@@ -7,10 +7,10 @@
 </head>
 <body>
     <h1>Send video for detecting traffic violations</h1>
-    <form id="sendVideoForm" action="" class="row" style="background-color:#dedede" onsubmit="return false">
+    <form id="sendVideoForm" action="" class="row" style="background-color:#EAF6F7" onsubmit="return false">
     <div class="col-8">
         <b>Video</b>
-        <select class="form-control" id="video-select">
+        <select class="col-6 form-control" id="video-select">
             <option value="custom">Video from PC</option>
             <option value="kompol-9s">Demo video: stop Polyclinic (9s.)</option>
             <option value="youtube-link">Youtube link</option>
@@ -20,20 +20,20 @@
             <label for="video-file">Video file</label>
         <input type="file" class="form-control-file" id="video-file">
         </div>
-        <br>
+
         <div class="form-group2" id="video-form2" style="display: none;">
             <label for="youtube-video">Yotube Video</label>
             <input type="text" class="form-control-file2" id="youtube-video" size="40">
             <button id="but-download">Загрузить</button>
         </div>
-        <br>
+
         <div id="video-view" style="display: none;">
             <video controls width="50%" src=""></video>
         </div>
         <iframe id="youtube-link" src="https://www.youtube.com/embed/x5EjzN8IdOA" style="display: none;" type="video/mp4"></iframe>
       </div>
     </form>
-    <section id="detectionProccess" class="row" style="background-color:#dedede" >
+    <section id="detectionProccess" class="row" style="background-color:#D8F2F5" >
             <div class="col-12">
                 <b>Wait detection...</b>
                 <p class="url-for-result">Result: <a href=""></a></p>
