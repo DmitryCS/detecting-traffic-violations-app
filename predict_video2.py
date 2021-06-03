@@ -10,7 +10,7 @@ import cv2
 from detectron2.data.datasets import register_coco_instances
 
 # для предиктора
-from db.queries.progress import update_progress
+from db.queries.progress import update_progress, update_num_violations
 from detectron2 import model_zoo
 from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
@@ -126,16 +126,11 @@ track_ids_to_zones = {}
 track_ids_to_zones_list = {}
 track_ids_to_zones_list2 = {}
 lines_json = {0:{}, 1:{}, 2: {}, 3:{}, 4:{}, 5:{}}
+violators_track_ids = set()
 with open('lines.json') as json_file:
     data_json = json.load(json_file)
     for ind, line_json in zip(range(6), data_json):
         lines_json[ind] = line_json
-
-# lines_green_json = {0:{}}
-# with open('green_lines.json') as json_file:
-#     data_json = json.load(json_file)
-#     for ind, line_json in zip(range(1), data_json):
-#         lines_green_json[ind] = line_json
 
 
 def get_position_on_zones(center, reg_zones):
@@ -157,19 +152,6 @@ def get_position_on_zones2(center):
     return positions
 
 
-# def is_it_red(mid_pos):
-#     for ind in range(1):
-#         if lines_green_json[ind]['miny'] <= mid_pos[0] <= lines_green_json[ind]['maxy']:
-#             # print(lines_json[ind]['minx'], lines_json[ind]['maxx'], y)
-#             x1 = lines_green_json[0][str(left_pos[1])]
-#             x2 = lines_green_json[0][str(right_pos[1])]
-#             x_mid = (x1+x2)//2
-#             if x_mid < lines_green_json[ind][str(x_mid)]:
-#                 positions[ind] = 1
-#             else:
-#                 positions[ind] = 2
-#     return positions
-
 def run_on_video(video):
         video_visualizer = VideoVisualizer(dataset_metadata, ColorMode.IMAGE)
 
@@ -180,11 +162,11 @@ def run_on_video(video):
             for i in range(len(track_ids)):
                 box = boxes[i]
                 track_id = track_ids[i]
-                # draw_label(frame, track_id, box[:2], size=2, shadow=True)
                 if track_id != 0 and track_id in track_ids_to_zones_list.keys():
+                    violators_track_ids.add(track_id)
                     draw_label(frame, "Solid line crossing", box[:2], size=2, shadow=True)
-                # print(track_ids_to_zones_list2)
                 if track_id != 0 and track_id in track_ids_to_zones_list2.keys():
+                    violators_track_ids.add(track_id)
                     draw_label(frame, "Driving a red light", box[:2], size=2, shadow=True)
 
             vis_frame = video_visualizer.draw_instance_predictions(frame, predictions)
@@ -204,22 +186,6 @@ def run_on_video(video):
             print(hue)
             hue_green = True if hue > 80 and hue < 250 else False #170
 
-            # lst = outputs['instances'].pred_masks.to("cpu").numpy().tolist()
-            # print(outputs['instances'].pred_masks.to("cpu").numpy().tolist())
-            # print(len(lst), len(lst[0]), len(lst[0][0]))
-            # temp_center_bboxs = []
-            # for car_id in range(len(lst)):
-            #     br = False
-            #     for hh in range(len(lst[0])-1, -1, -1):
-            #         for ww in range(len(lst[0][0])):
-            #             if lst[car_id][hh][ww]:
-            #                 temp_center_bboxs.append([ww, hh])
-            #                 # print(hh, ww)
-            #                 br = True
-            #                 break
-            #         if br:
-            #             break
-            # exit(0)
             lst = outputs['instances'].pred_masks.to("cpu").numpy()
             scores = outputs['instances'].scores.to("cpu").numpy()
             # Обновляем трекер, получаем track_id (id объекта на предыдущих кадрах) для каждого найденного объекта
@@ -303,6 +269,7 @@ def predict_video_outside(path_to_video, path_to_save_video, session, progress_i
         output_file.write(vis_frame)
         index_for += 1
     update_progress(session, progress_id, 99)
+    update_num_violations(session, progress_id, len(violators_track_ids))
     video.release()
     output_file.release()
     os.system(

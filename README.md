@@ -14,3 +14,6 @@ Add weights to `output/model_final.pth`
 ### Run
 `python main_predict_video.py`
 `python main_sanic.py`
+
+### Result
+![alt text](https://raw.githubusercontent.com/DmitryCS/detecting-traffic-violations-app/master/images/main_screen.png)

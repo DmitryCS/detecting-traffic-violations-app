@@ -1,4 +1,4 @@
-from sqlalchemy import Column, VARCHAR, BOOLEAN
+from sqlalchemy import Column, VARCHAR, BOOLEAN, Integer
 
 from db.models import BaseModel
 

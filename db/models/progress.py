@@ -16,6 +16,11 @@ class DBProgress(BaseModel):
         Integer,
         nullable=False,
     )
+    violations_num = Column(
+        Integer,
+        nullable=False,
+        default=0
+    )
     is_delete = Column(
         BOOLEAN(),
         nullable=False,

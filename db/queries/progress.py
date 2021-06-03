@@ -28,3 +28,7 @@ def get_progress_percantage(session: DBSession, progress_id: int) -> int:
         return db_progress.progress_percentage
     else:
         return -1
+
+
+def update_num_violations(session: DBSession, progress_id: int, num_violations: int) -> None:
+    session.update_num_violations(progress_id, num_violations)

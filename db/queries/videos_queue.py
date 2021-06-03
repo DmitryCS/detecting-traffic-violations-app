@@ -18,4 +18,3 @@ def check_existing_hash(session: DBSession, hash_video) -> bool:
     if session.check_existing_hash(hash_video):
         return True
     return False
-
