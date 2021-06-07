@@ -2,6 +2,7 @@ $.ajax({
         url: 'http://localhost:8000/list_videos',
         success: function (data) {
             let video_names = data['videos'];
+            let num_violations = data['num_violations'];
             let str = '';
             elements = document.getElementById('elements');
             console.log(video_names);
@@ -32,7 +33,7 @@ $.ajax({
                     
                           <!--Footer-->
                           <div class="modal-footer justify-content-center">
-                            <span class="mr-4">Spread the word!</span>
+                            <span class="mr-4">Number of violations: ${num_violations[i-1]}</span>
                             <a type="button" class="btn-floating btn-sm btn-fb"><i class="fab fa-facebook-f"></i></a>
                             <!--Twitter-->
                             <a type="button" class="btn-floating btn-sm btn-tw"><i class="fab fa-twitter"></i></a>

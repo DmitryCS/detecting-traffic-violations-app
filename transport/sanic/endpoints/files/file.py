@@ -10,7 +10,8 @@ import hashlib
 from db.database import DBSession
 from db.exceptions import DBDataException, DBIntegrityException, DBFileNotExistsException
 from db.queries.progress import get_progress_percantage, update_progress, create_progress
-from db.queries.videos_queue import add_video_in_queue, get_list_videos, check_existing_hash
+from db.queries.videos_queue import add_video_in_queue, get_list_videos, check_existing_hash, \
+    get_num_violathions_by_videoid
 from transport.sanic.endpoints import BaseEndpoint
 from db.queries import file as file_queries
 from transport.sanic.exceptions import SanicDBException, SanicFileNotFound, SanicUserConflictException
@@ -164,7 +165,9 @@ class GetListVideosEndpoint(BaseEndpoint):
     ) -> BaseHTTPResponse:
         videos = get_list_videos(session)
         videos_name = []
+        num_violations = []
         for video in videos:
             videos_name.append(video.video_name)
-        print(videos_name)
-        return await self.make_response_json(body={"videos": videos_name}, status=201)
+            num_violations.append(get_num_violathions_by_videoid(session, video.id))
+        print(videos_name, num_violations)
+        return await self.make_response_json(body={"videos": videos_name, "num_violations": num_violations}, status=201)

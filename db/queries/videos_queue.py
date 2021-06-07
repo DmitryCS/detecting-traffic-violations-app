@@ -18,3 +18,7 @@ def check_existing_hash(session: DBSession, hash_video) -> bool:
     if session.check_existing_hash(hash_video):
         return True
     return False
+
+
+def get_num_violathions_by_videoid(session: DBSession, video_id: int) -> int:
+    return session.get_num_violathions_by_videoid(video_id).violations_num

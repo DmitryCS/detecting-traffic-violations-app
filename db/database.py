@@ -65,6 +65,9 @@ class DBSession:
     def check_existing_hash(self, hash_video) -> DBVideoQueue:
         return self._session.query(DBVideoQueue).filter(DBVideoQueue.hash_video == hash_video).first()
 
+    def get_num_violathions_by_videoid(self, video_id) -> DBProgress:
+        return self._session.query(DBProgress).filter(DBProgress.queue_id == video_id).first()
+
     def add_model_video(self, model: BaseModel):
         try:
             self._session.add(model)
