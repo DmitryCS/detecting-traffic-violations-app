@@ -127,7 +127,7 @@ track_ids_to_zones_list = {}
 track_ids_to_zones_list2 = {}
 lines_json = {0:{}, 1:{}, 2: {}, 3:{}, 4:{}, 5:{}}
 violators_track_ids = set()
-with open('lines.json') as json_file:
+with open('lines0.json') as json_file:
     data_json = json.load(json_file)
     for ind, line_json in zip(range(6), data_json):
         lines_json[ind] = line_json
@@ -152,7 +152,7 @@ def get_position_on_zones2(center):
     return positions
 
 
-def run_on_video(video):
+def run_on_video(video, predictor, tracker, mask, frame_gen):
         video_visualizer = VideoVisualizer(dataset_metadata, ColorMode.IMAGE)
 
         def process_predictions(frame, predictions, track_ids):
@@ -162,9 +162,9 @@ def run_on_video(video):
             for i in range(len(track_ids)):
                 box = boxes[i]
                 track_id = track_ids[i]
-                if track_id != 0 and track_id in track_ids_to_zones_list.keys():
-                    violators_track_ids.add(track_id)
-                    draw_label(frame, "Solid line crossing", box[:2], size=2, shadow=True)
+                # if track_id != 0 and track_id in track_ids_to_zones_list.keys():
+                #     violators_track_ids.add(track_id)
+                #     draw_label(frame, "Solid line crossing", box[:2], size=2, shadow=True)
                 if track_id != 0 and track_id in track_ids_to_zones_list2.keys():
                     violators_track_ids.add(track_id)
                     draw_label(frame, "Driving a red light", box[:2], size=2, shadow=True)
@@ -211,6 +211,7 @@ def run_on_video(video):
                     fir = track_ids_to_zones[track_ids[i]][j]
                     sec = pos_on_zones[j]
                     if fir != sec and fir*sec != 0:
+                        # if not track_ids_to_zones_list.keys():
                         track_ids_to_zones_list[track_ids[i]] = 3
 
                 if hue_green:
@@ -238,7 +239,7 @@ def predict_video_outside(path_to_video, path_to_save_video, session, progress_i
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.51  # установить порог распознавания объекта в 50% (объекты, распознанные с меньшей вероятностью не будут учитываться)
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = 13  # число классов для распознавания
     cfg.MODEL.DEVICE = 'cuda:0'
-    global predictor, tracker, mask, frame_gen
+    # global predictor, tracker, mask, frame_gen
     predictor = DefaultPredictor(cfg)
     tracker = Sort(max_age=40)
 
@@ -262,7 +263,7 @@ def predict_video_outside(path_to_video, path_to_save_video, session, progress_i
     frame_gen = _frame_from_video(video)
 
     index_for = 0
-    for vis_frame in tqdm.tqdm(run_on_video(video), total=num_frames):
+    for vis_frame in tqdm.tqdm(run_on_video(video, predictor, tracker, mask, frame_gen), total=num_frames):
         print("it's here:", int(index_for / num_frames * 100))
         if index_for % 10:
             update_progress(session, progress_id, int(index_for / num_frames * 100))

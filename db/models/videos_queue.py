@@ -9,6 +9,11 @@ class DBVideoQueue(BaseModel):
 
     video_name = Column(VARCHAR(4096))
     hash_video = Column(VARCHAR(100))
+    is_in_progress = Column(
+        BOOLEAN(),
+        nullable=False,
+        default=False
+    )
     is_done = Column(
         BOOLEAN(),
         nullable=False,

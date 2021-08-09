@@ -1,8 +1,8 @@
 """add progress
 
-Revision ID: 409eea2f5169
+Revision ID: 1f1534011c45
 Revises: 
-Create Date: 2021-06-03 20:33:48.918051
+Create Date: 2021-08-09 11:39:21.443738
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '409eea2f5169'
+revision = '1f1534011c45'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,6 +24,7 @@ def upgrade():
     sa.Column('updated_at', sa.TIMESTAMP(), nullable=False),
     sa.Column('video_name', sa.VARCHAR(length=4096), nullable=True),
     sa.Column('hash_video', sa.VARCHAR(length=100), nullable=True),
+    sa.Column('is_in_progress', sa.BOOLEAN(), nullable=False),
     sa.Column('is_done', sa.BOOLEAN(), nullable=False),
     sa.Column('is_delete', sa.BOOLEAN(), nullable=False),
     sa.PrimaryKeyConstraint('id'),

@@ -23,6 +23,7 @@ alembic init
 alembic revision --message="add progress" --autogenerate
 alembic upgrade head
 
+sudo service postgresql restart
 sudo -u postgres psql postgres
 DROP DATABASE detections;
 CREATE DATABASE detections;

@@ -94,7 +94,11 @@ class DBSession:
     def get_last_video_from_queue(self) -> DBVideoQueue:
         return self._session.query(DBVideoQueue).filter(
             and_(DBVideoQueue.is_done == false(),
+                 DBVideoQueue.is_in_progress == false(),
                  DBVideoQueue.is_delete == false())).order_by(asc(DBVideoQueue.id)).first()
+
+    def set_is_in_progress(self, id: int) -> None:
+        self._session.query(DBVideoQueue).filter(DBVideoQueue.id == id).first().is_in_progress = true()
 
     def delete_video_from_queue_by_pid(self, pid: int) -> None:
         self._session.query(DBVideoQueue).filter(DBVideoQueue.id == pid).first().is_delete = true()
