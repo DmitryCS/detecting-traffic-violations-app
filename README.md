@@ -8,7 +8,7 @@
 
 `python -m pip install -e detectron2`
 
-Add weights to `output/model_final.pth`
+Add [weights](https://drive.google.com/drive/folders/1HaVJoner14G2WUb2iwSZ6KuUi7ONUTmU) to `output/model_final.pth`
 Сustomize the database PostgreSQL using `init.sql`
 
 ### Run
@@ -17,3 +17,5 @@ Add weights to `output/model_final.pth`
 
 ### Result
 ![alt text](https://raw.githubusercontent.com/DmitryCS/detecting-traffic-violations-app/master/images/main_screen.png)
+
+[Examples of processed videos](https://drive.google.com/drive/folders/1HaVJoner14G2WUb2iwSZ6KuUi7ONUTmU)
